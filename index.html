@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPOWERAI // COMMAND NODE</title>
+    <style>
+        :root {
+            --neon-green: #0f0;
+            --neon-blue: #00f0ff;
+            --bg-color: #0a0a0a;
+            --panel-bg: #111;
+            --border-color: #333;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 { margin-bottom: 5px; text-shadow: 0 0 10px var(--neon-green); font-size: 2.5em; text-align: center;}
+        .subtitle { color: #666; font-size: 0.9em; margin-bottom: 50px; text-align: center; }
+
+        .portal-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .portal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 40px 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--neon-green);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .portal-card:hover {
+            background: #1a1a1a;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+            transform: translateY(-5px);
+        }
+
+        .portal-card.blue:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px var(--neon-blue);
+            color: var(--neon-blue);
+        }
+
+        .portal-card h2 { font-size: 1.8em; margin-bottom: 10px; }
+        .portal-card p { color: #888; font-size: 0.9em; line-height: 1.5; }
+        
+        .status-badge {
+            margin-top: 20px;
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border: 1px solid #444;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>EMPOWERAI // PLATFORM</h1>
+    <div class="subtitle">MATHEMATICAL DECOUPLING FOR THE TACTICAL EDGE | STATUS: SECURE</div>
+
+    <div class="portal-container">
+        <a href="https://orthogon.empowerai.us" class="portal-card">
+            <h2>[ ORTHOGON ]</h2>
+            <p>Space Domain Awareness & Threat Manifold<br><br>Edge Verification as a Service (EVaaS) powered by Rust-based ZK-STARKs and Smart Treaties.</p>
+            <div><span class="status-badge" style="color: yellow; border-color: yellow;">NODE: EDGE (LOCAL)</span></div>
+        </a>
+
+        <a href="https://tensor-forge.empowerai.us" class="portal-card blue">
+            <h2>[ TENSOR-FORGE ]</h2>
+            <p>Coupled Matrix & Tensor Factorization (CMTF)<br><br>Information-Maximizing AI Test Agent for uncovering latent multi-physics correlations.</p>
+            <div><span class="status-badge" style="color: var(--neon-blue); border-color: var(--neon-blue);">NODE: CLOUD (24/7)</span></div>
+        </a>
+    </div>
+
+</body>
+</html>
