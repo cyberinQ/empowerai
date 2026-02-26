@@ -110,3 +110,44 @@ if demo_mode:
             st.plotly_chart(fig_time, use_container_width=True)
 
         st.markdown("> **ANALYTICS ENGINE OUTPUT:** The model isolated a mathematically linked event where NVIDIA (AI), Constellation Energy (Nuclear), and Freeport-McMoRan (Copper) experienced simultaneous heavy trading volume over the last 72 hours, completely invisible to traditional sector-isolated analysis.")
+
+        # --- ADD THIS TO THE VERY BOTTOM OF app.py ---
+elif file1 and file2:
+    with st.spinner("UPLINK SECURED. DECOMPOSING CUSTOM DATASETS..."):
+        # 1. Read the CSVs
+        df1 = pd.read_csv(file1, index_col=0)
+        df2 = pd.read_csv(file2, index_col=0)
+        
+        entities = df1.index.tolist()
+        metrics_1 = df1.columns.tolist()
+        
+        # 2. Stack into a 3D Tensor (Entities x Datasets x Features)
+        X = np.stack([df1.values, df2.values], axis=1)
+        tensor_tl = tl.tensor(X)
+        
+        # 3. Run CP Factorization
+        weights, factors = parafac(tensor_tl, rank=rank, init='random', tol=10e-6)
+        
+        st.success("MANUAL TENSOR FACTORIZATION COMPLETE.")
+        st.markdown("---")
+        
+        # 4. Visualization
+        col1, col2 = st.columns(2)
+        
+        def dark_bar_chart(x, y, title, color):
+            fig = px.bar(x=x, y=y, title=title)
+            fig.update_traces(marker_color=color)
+            fig.update_layout(
+                plot_bgcolor='#111', paper_bgcolor='#0a0a0a', 
+                font_color='#0f0', title_font_color='#00f0ff',
+                xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor='#333', title="")
+            )
+            return fig
+
+        with col1:
+            fig_entity = dark_bar_chart(entities, factors[0][:, 0], "EXTRACTED: SHARED ENTITY VECTOR", "#00f0ff")
+            st.plotly_chart(fig_entity, use_container_width=True)
+            
+        with col2:
+            fig_metric = dark_bar_chart(metrics_1, factors[2][:, 0], "EXTRACTED: FEATURE WEIGHTS", "#ff003c")
+            st.plotly_chart(fig_metric, use_container_width=True)
