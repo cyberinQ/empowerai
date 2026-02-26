@@ -1,0 +1,6 @@
+Entity,Jamming_Chatter,Laser_Keywords,Proximity_Alerts
+SAT-Alpha,0.95,0.85,0.10
+SAT-Bravo,0.10,0.05,0.05
+SAT-Charlie,0.88,0.91,0.15
+SAT-Delta,0.02,0.05,0.08
+SAT-Echo,0.15,0.10,0.12
