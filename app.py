@@ -14,6 +14,12 @@ st.markdown("""
     <style>
     /* Global Command Center Theme */
     .stApp { background-color: #0a0a0a; color: #0f0; font-family: 'Courier New', Courier, monospace; }
+    
+    /* --- SIDEBAR & UPLOADER FIXES --- */
+    [data-testid="stSidebar"] { background-color: #050505 !important; border-right: 1px solid #333; }
+    [data-testid="stHeader"] { background-color: #0a0a0a !important; }
+    [data-testid="stFileUploadDropzone"] { background-color: #111 !important; border: 1px dashed #0f0 !important; }
+    
     h1, h2, h3, h4, p, span, div, label { color: #0f0 !important; font-family: 'Courier New', Courier, monospace !important; }
     .stButton>button { background-color: #111; color: #00f0ff !important; border: 1px solid #00f0ff; box-shadow: 0 0 10px rgba(0,240,255,0.5); border-radius: 0px; transition: all 0.3s; }
     .stButton>button:hover { background-color: #00f0ff; color: #000 !important; box-shadow: 0 0 20px #00f0ff; }
