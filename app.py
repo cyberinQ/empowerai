@@ -119,7 +119,7 @@ elif file1 and file2 and start_manual:
         df2 = pd.read_csv(file2, index_col=0)
         
         # DECISION LOGIC: Are the files identical in shape for a 3D Tensor?
-        if df1.shape == df2.shape and all(df1.index == df2.index):
+        if df1.shape == df2.shape and df1.index.equals(df2.index):
             st.info("DETECTED SYMMETRIC DATA: EXECUTING FULL TENSOR STACK.")
             entities = df1.index.tolist()
             metrics_1 = df1.columns.tolist()
@@ -169,9 +169,12 @@ elif file1 and file2 and start_manual:
                 # Concatenate on the feature axis to find the shared latent space across both domains.
                 combined_matrix = np.hstack([df1_norm.values, df2_norm.values])
                 
+                # CLEAN DIRTY DATA: Sanitize NaNs and Infs caused by sparse government data or zero-variance columns
+                combined_matrix = np.nan_to_num(combined_matrix, nan=0.0, posinf=0.0, neginf=0.0)
+                
                 # Perform SVD as a proxy for the shared Factor in CMTF
                 u, s, vh = np.linalg.svd(combined_matrix, full_matrices=False)
-                
+
                 st.success(f"ALIGNMENT SUCCESSFUL. ANALYZING {len(common_entities)} SHARED ENTITIES.")
                 st.markdown("---")
                 
