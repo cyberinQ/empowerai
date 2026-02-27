@@ -60,9 +60,20 @@ st.sidebar.markdown("### UPLINK CONTROLS")
 demo_mode = st.sidebar.button("[ EXECUTE STOCK MARKET DEMO ]")
 st.sidebar.markdown("---")
 st.sidebar.markdown("### MANUAL OVERRIDE")
-file1 = st.sidebar.file_uploader("UPLOAD TENSOR (CSV)", type="csv")
-file2 = st.sidebar.file_uploader("UPLOAD MATRIX (CSV)", type="csv")
+file1 = st.sidebar.file_uploader("UPLOAD DATASET ALPHA (CSV)", type="csv")
+file2 = st.sidebar.file_uploader("UPLOAD DATASET BETA (CSV)", type="csv")
 rank = st.sidebar.slider("TARGET RANK (LATENT VECTORS)", 1, 5, 3)
+
+# Helper for dark Plotly charts
+def dark_bar_chart(x, y, title, color):
+    fig = px.bar(x=x, y=y, title=title)
+    fig.update_traces(marker_color=color)
+    fig.update_layout(
+        plot_bgcolor='#111', paper_bgcolor='#0a0a0a', 
+        font_color='#0f0', title_font_color='#00f0ff',
+        xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor='#333', title="")
+    )
+    return fig
 
 # --- 4. ENGINE EXECUTION ---
 if demo_mode:
@@ -83,17 +94,6 @@ if demo_mode:
         
         col1, col2, col3 = st.columns(3)
         
-        # Helper for dark Plotly charts
-        def dark_bar_chart(x, y, title, color):
-            fig = px.bar(x=x, y=y, title=title)
-            fig.update_traces(marker_color=color)
-            fig.update_layout(
-                plot_bgcolor='#111', paper_bgcolor='#0a0a0a', 
-                font_color='#0f0', title_font_color='#00f0ff',
-                xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor='#333', title="")
-            )
-            return fig
-
         # Plot Entity Vector
         with col1:
             fig_entity = dark_bar_chart(entities, factors[0][:, 0], "SHARED ENTITY VECTOR", "#00f0ff")
@@ -111,43 +111,77 @@ if demo_mode:
 
         st.markdown("> **ANALYTICS ENGINE OUTPUT:** The model isolated a mathematically linked event where NVIDIA (AI), Constellation Energy (Nuclear), and Freeport-McMoRan (Copper) experienced simultaneous heavy trading volume over the last 72 hours, completely invisible to traditional sector-isolated analysis.")
 
-        # --- ADD THIS TO THE VERY BOTTOM OF app.py ---
 elif file1 and file2:
-    with st.spinner("UPLINK SECURED. DECOMPOSING CUSTOM DATASETS..."):
+    with st.spinner("UPLINK SECURED. ANALYZING DATA STRUCTURES..."):
         # 1. Read the CSVs
         df1 = pd.read_csv(file1, index_col=0)
         df2 = pd.read_csv(file2, index_col=0)
         
-        entities = df1.index.tolist()
-        metrics_1 = df1.columns.tolist()
-        
-        # 2. Stack into a 3D Tensor (Entities x Datasets x Features)
-        X = np.stack([df1.values, df2.values], axis=1)
-        tensor_tl = tl.tensor(X)
-        
-        # 3. Run CP Factorization
-        weights, factors = parafac(tensor_tl, rank=rank, init='random', tol=10e-6)
-        
-        st.success("MANUAL TENSOR FACTORIZATION COMPLETE.")
-        st.markdown("---")
-        
-        # 4. Visualization
-        col1, col2 = st.columns(2)
-        
-        def dark_bar_chart(x, y, title, color):
-            fig = px.bar(x=x, y=y, title=title)
-            fig.update_traces(marker_color=color)
-            fig.update_layout(
-                plot_bgcolor='#111', paper_bgcolor='#0a0a0a', 
-                font_color='#0f0', title_font_color='#00f0ff',
-                xaxis=dict(showgrid=False, title=""), yaxis=dict(showgrid=True, gridcolor='#333', title="")
-            )
-            return fig
-
-        with col1:
-            fig_entity = dark_bar_chart(entities, factors[0][:, 0], "EXTRACTED: SHARED ENTITY VECTOR", "#00f0ff")
-            st.plotly_chart(fig_entity, use_container_width=True)
+        # DECISION LOGIC: Are the files identical in shape for a 3D Tensor?
+        if df1.shape == df2.shape and all(df1.index == df2.index):
+            st.info("DETECTED SYMMETRIC DATA: EXECUTING FULL TENSOR STACK.")
+            entities = df1.index.tolist()
+            metrics_1 = df1.columns.tolist()
             
-        with col2:
-            fig_metric = dark_bar_chart(metrics_1, factors[2][:, 0], "EXTRACTED: FEATURE WEIGHTS", "#ff003c")
-            st.plotly_chart(fig_metric, use_container_width=True)
+            # Stack into a 3D Tensor (Entities x Datasets x Features)
+            X = np.stack([df1.values, df2.values], axis=1)
+            tensor_tl = tl.tensor(X)
+            
+            # Run CP Factorization
+            weights, factors = parafac(tensor_tl, rank=rank, init='random', tol=10e-6)
+            
+            st.success("MANUAL TENSOR FACTORIZATION COMPLETE.")
+            st.markdown("---")
+            
+            # Visualization
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                fig_entity = dark_bar_chart(entities, factors[0][:, 0], "EXTRACTED: SHARED ENTITY VECTOR", "#00f0ff")
+                st.plotly_chart(fig_entity, use_container_width=True)
+                
+            with col2:
+                fig_metric = dark_bar_chart(metrics_1, factors[2][:, 0], "EXTRACTED: FEATURE WEIGHTS", "#ff003c")
+                st.plotly_chart(fig_metric, use_container_width=True)
+                
+        else:
+            st.info("DETECTED DISPARATE DATA: EXECUTING ALIGNMENT & CROSS-DOMAIN FACTORIZATION.")
+            # 1. Align by Index
+            common_entities = df1.index.intersection(df2.index).tolist()
+            
+            if len(common_entities) < 2:
+                st.error("ERROR: No shared entities (Row IDs) found between these files.")
+            else:
+                # Filter both to only include shared entities and ensure numeric data types
+                df1_aligned = df1.loc[common_entities].select_dtypes(include=[np.number])
+                df2_aligned = df2.loc[common_entities].select_dtypes(include=[np.number])
+                
+                # 2. FEATURE NORMALIZATION (Critical for disparate scales)
+                # Ensure missing or zero-variance columns do not cause division by zero
+                df1_std = df1_aligned.std().replace(0, 1)
+                df2_std = df2_aligned.std().replace(0, 1)
+                
+                df1_norm = (df1_aligned - df1_aligned.mean()) / df1_std
+                df2_norm = (df2_aligned - df2_aligned.mean()) / df2_std
+                
+                # 3. COUPLED REPRESENTATION
+                # Concatenate on the feature axis to find the shared latent space across both domains.
+                combined_matrix = np.hstack([df1_norm.values, df2_norm.values])
+                
+                # Perform SVD as a proxy for the shared Factor in CMTF
+                u, s, vh = np.linalg.svd(combined_matrix, full_matrices=False)
+                
+                st.success(f"ALIGNMENT SUCCESSFUL. ANALYZING {len(common_entities)} SHARED ENTITIES.")
+                st.markdown("---")
+                
+                # 4. VISUALIZATION
+                col1, col2 = st.columns(2)
+                with col1:
+                    # Top Latent Factor for Entities
+                    fig_entity = dark_bar_chart(common_entities, u[:, 0], "SHARED LATENT ENTITY VECTOR", "#00f0ff")
+                    st.plotly_chart(fig_entity, use_container_width=True)
+                with col2:
+                    # Combined Feature Weights
+                    all_features = df1_aligned.columns.tolist() + df2_aligned.columns.tolist()
+                    fig_feature = dark_bar_chart(all_features, vh[0, :], "CROSS-DOMAIN FEATURE CORRELATION", "#ff003c")
+                    st.plotly_chart(fig_feature, use_container_width=True)
