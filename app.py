@@ -112,7 +112,7 @@ if demo_mode:
 
         st.markdown("> **ANALYTICS ENGINE OUTPUT:** The model isolated a mathematically linked event where NVIDIA (AI), Constellation Energy (Nuclear), and Freeport-McMoRan (Copper) experienced simultaneous heavy trading volume over the last 72 hours, completely invisible to traditional sector-isolated analysis.")
 
-elif file1 and file2:
+elif file1 and file2 and start_manual:
     with st.spinner("UPLINK SECURED. ANALYZING DATA STRUCTURES..."):
         # 1. Read the CSVs
         df1 = pd.read_csv(file1, index_col=0)
