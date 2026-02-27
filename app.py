@@ -63,6 +63,7 @@ st.sidebar.markdown("### MANUAL OVERRIDE")
 file1 = st.sidebar.file_uploader("UPLOAD DATASET ALPHA (CSV)", type="csv")
 file2 = st.sidebar.file_uploader("UPLOAD DATASET BETA (CSV)", type="csv")
 rank = st.sidebar.slider("TARGET RANK (LATENT VECTORS)", 1, 5, 3)
+start_manual = st.sidebar.button("[ INITIATE MANUAL ANALYSIS ]")
 
 # Helper for dark Plotly charts
 def dark_bar_chart(x, y, title, color):
